@@ -1,0 +1,23 @@
+global:
+  default: true
+  format: "{shortname}{factions_relcolor}{factions_name} {prefix}{player}{suffix} &8: &r{message}"
+admin:
+  format: "&c[AC]&7{player}&8: &c{message}"
+creative:
+  format: "{prefix}{player}{suffix} &8: &r{message}"
+factions:
+  format: "{prefix}{player}{suffix} &8: &r{message}"
+hub:
+  format: "{prefix}{player}{suffix} &8: &r{message}"
+quiet:
+  format: ""
+  send: []
+  receive: []
+special:
+  format: "{prefix}{player}{suffix} &8: &r{message}"
+  send:
+  - creative
+  - factions
+  receive:
+  - hub
+  - factions

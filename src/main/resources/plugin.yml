@@ -1,0 +1,4 @@
+name: ServerSync_Bungee
+version: 1.0
+author: michaelkrauty
+main: me.michaelkrauty.ServerSync_Bungee.Main
