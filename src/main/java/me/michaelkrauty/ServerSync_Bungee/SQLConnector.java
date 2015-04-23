@@ -62,7 +62,7 @@ public class SQLConnector {
     public synchronized void checkTables() {
         openConnection();
         try {
-            PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + prefix + "users` (uuid varchar(256) PRIMARY KEY, banned date, ban_time int(255), muted date, mute_time int(255), lastname varchar(256), nickname varchar(256));");
+            PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + prefix + "users` (uuid varchar(256) PRIMARY KEY, banned date, ban_time int(255), ban_reason varchar(256), muted date, mute_time int(255), mute_reason varchar(256), lastname varchar(256), nickname varchar(256));");
             stmt.execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,7 +72,7 @@ public class SQLConnector {
     public void checkUser(String uuid) {
         if (getUserData(uuid) == null) {
             try {
-                PreparedStatement stmt = connection.prepareStatement("INSERT INTO `" + prefix + "users` (`uuid`, `banned`, `ban_time`, `muted`, `mute_time`, `lastname`, `nickname`) VALUES (?,null,-1,null,-1,null,null);");
+                PreparedStatement stmt = connection.prepareStatement("INSERT INTO `" + prefix + "users` (`uuid`, `banned`, `ban_time`, `ban_reason`, `muted`, `mute_time`, `mute_reason`, `lastname`, `nickname`) VALUES (?,null,-1,null,-1,null,null);");
                 stmt.setString(1, uuid);
                 stmt.execute();
             } catch (Exception e) {
@@ -90,8 +90,10 @@ public class SQLConnector {
             if (result.next()) {
                 r.add(result.getDate("banned"));
                 r.add(result.getInt("ban_time"));
+                r.add(result.getString("ban_reason"));
                 r.add(result.getDate("muted"));
                 r.add(result.getInt("mute_time"));
+                r.add(result.getString("mute_reason"));
                 r.add(result.getString("lastname"));
                 r.add(result.getString("nickname"));
                 return r;
@@ -104,7 +106,7 @@ public class SQLConnector {
 
     public void saveUser(User user) {
         try {
-            PreparedStatement stmt = connection.prepareStatement("UPDATE `" + prefix + "users` SET `banned`=?, `ban_time`=-1, `muted`=?, `mute_time`=-1, `lastname`=?, `nickname`=? WHERE `uuid`=?");
+            PreparedStatement stmt = connection.prepareStatement("UPDATE `" + prefix + "users` SET `banned`=?, `ban_time`=-1, `ban_reason`=NULL `muted`=?, `mute_time`=-1, `mute_reason`=NULL `lastname`=?, `nickname`=? WHERE `uuid`=?");
             stmt.setDate(1, user.banned);
             stmt.setDate(2, user.muted);
             stmt.setString(3, user.nickname);

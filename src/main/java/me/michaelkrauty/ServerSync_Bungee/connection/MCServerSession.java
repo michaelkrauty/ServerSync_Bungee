@@ -19,13 +19,13 @@ import java.net.Socket;
  *
  * @author michaelkrauty
  */
-public class ClientSession implements Runnable {
+public class MCServerSession implements Runnable {
 
     private final Main main;
     private final Socket socket;
     public PrintWriter out;
 
-    public ClientSession(Main main, Socket socket) {
+    public MCServerSession(Main main, Socket socket) {
         this.main = main;
         this.socket = socket;
         main.getProxy().getScheduler().runAsync(main, this);
@@ -50,7 +50,7 @@ public class ClientSession implements Runnable {
                         Channel channel = user.channel;
                         main.getLogger().info("[CHAT] " + user.player.getName() + ": " + obj.get("message").getAsString());
 
-                        for (ClientSession session : main.connectionHandler.clients) {
+                        for (MCServerSession session : main.connectionHandler.mcServerConnections) {
                             JsonObject out = new JsonObject();
                             out.addProperty("action", "chat");
                             JsonArray to = new JsonArray();
@@ -67,8 +67,10 @@ public class ClientSession implements Runnable {
                             out.addProperty("message", message);
                             session.out.println(out);
                         }
+                    } else if (action.equalsIgnoreCase("ban")) {
+
                     } else if (action.equalsIgnoreCase("mute")) {
-                        for (ClientSession session : main.connectionHandler.clients) {
+                        for (MCServerSession session : main.connectionHandler.mcServerConnections) {
                             session.out.println(obj);
                         }
                     }

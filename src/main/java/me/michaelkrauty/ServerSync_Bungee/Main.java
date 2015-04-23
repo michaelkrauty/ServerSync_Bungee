@@ -4,6 +4,7 @@ import me.michaelkrauty.ServerSync_Bungee.channels.ChannelManager;
 import me.michaelkrauty.ServerSync_Bungee.config.ChannelsFile;
 import me.michaelkrauty.ServerSync_Bungee.config.ConfigFile;
 import me.michaelkrauty.ServerSync_Bungee.connection.ConnectionHandler;
+import me.michaelkrauty.ServerSync_Bungee.user.User;
 import me.michaelkrauty.ServerSync_Bungee.user.UserManager;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -39,9 +40,10 @@ public class Main extends Plugin implements Listener {
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
-        users.get(event.getPlayer());
-        getLogger().info("User Info: " + users.get(event.getPlayer()).toString());
-        // TODO: disconnect
+        User user = users.get(event.getPlayer());
+        getLogger().info("User Info: " + user.toString());
+        if (user.isBanned())
+            user.player.disconnect(new net.md_5.bungee.api.chat.TextComponent(user.ban_reason));
     }
 
     @EventHandler

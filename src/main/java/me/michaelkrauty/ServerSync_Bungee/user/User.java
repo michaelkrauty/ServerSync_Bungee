@@ -20,8 +20,10 @@ public class User {
     public String nickname;
     public Date muted;
     public int mute_time;
+    public String mute_reason;
     public Date banned;
     public int ban_time;
+    public String ban_reason;
     public Channel channel;
 
     public User(Main main, ProxiedPlayer player) {

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class ConnectionHandler implements Runnable {
 
     private final Main main;
-    public ArrayList<ClientSession> clients = new ArrayList<ClientSession>();
+    public ArrayList<MCServerSession> mcServerConnections = new ArrayList<MCServerSession>();
 
     public ConnectionHandler(Main main) {
         this.main = main;
@@ -26,9 +26,8 @@ public class ConnectionHandler implements Runnable {
             ServerSocket socket = new ServerSocket(53844);
             main.getLogger().info("Listening on " + socket.getLocalSocketAddress());
             Socket client;
-            while ((client = socket.accept()) != null) {
-                clients.add(new ClientSession(main, client));
-            }
+            while ((client = socket.accept()) != null)
+                mcServerConnections.add(new MCServerSession(main, client));
         } catch (Exception e) {
             e.printStackTrace();
         }
