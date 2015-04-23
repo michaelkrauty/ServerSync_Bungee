@@ -21,19 +21,25 @@ public class UserManager {
     }
 
     public User get(ProxiedPlayer player) {
-        for (User user : users) {
+        for (User user : users)
             if (user.player == player)
                 return user;
-        }
         User user = new User(main, player);
         users.add(user);
         return user;
     }
 
     public void remove(ProxiedPlayer player) {
-        for (User user : users) {
+        ArrayList<User> newUsers = new ArrayList<User>();
+        for (User user : users)
             if (user.player == player)
-                users.remove(user);
-        }
+                user.save();
+            else
+                newUsers.add(user);
+        users = newUsers;
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
     }
 }

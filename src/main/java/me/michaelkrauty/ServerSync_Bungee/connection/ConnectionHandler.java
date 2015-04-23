@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class ConnectionHandler implements Runnable {
 
     private final Main main;
-    private ArrayList<ClientSession> clients = new ArrayList<ClientSession>();
+    public ArrayList<ClientSession> clients = new ArrayList<ClientSession>();
 
     public ConnectionHandler(Main main) {
         this.main = main;

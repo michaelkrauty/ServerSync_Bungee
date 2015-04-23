@@ -62,7 +62,7 @@ public class SQLConnector {
     public synchronized void checkTables() {
         openConnection();
         try {
-            PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + prefix + "users` (uuid varchar(256) PRIMARY KEY, banned timestamp, ban_time int(255), muted timestamp, mute_time int(255), nickname varchar(256), admin tinyint(1));");
+            PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + prefix + "users` (uuid varchar(256) PRIMARY KEY, banned date, ban_time int(255), muted date, mute_time int(255), lastname varchar(256), nickname varchar(256));");
             stmt.execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,13 +70,14 @@ public class SQLConnector {
     }
 
     public void checkUser(String uuid) {
-        try {
-            // TODO
-            PreparedStatement stmt = connection.prepareStatement("INSERT INTO `" + prefix + "users` (`uuid`, `banned`, `ban_time`, `muted`, `mute_time`, `nickname`) VALUES (?,null,null,null,null,null);");
-            stmt.setString(1, uuid);
-            stmt.execute();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (getUserData(uuid) == null) {
+            try {
+                PreparedStatement stmt = connection.prepareStatement("INSERT INTO `" + prefix + "users` (`uuid`, `banned`, `ban_time`, `muted`, `mute_time`, `lastname`, `nickname`) VALUES (?,null,-1,null,-1,null,null);");
+                stmt.setString(1, uuid);
+                stmt.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -86,13 +87,15 @@ public class SQLConnector {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM `" + prefix + "users` WHERE uuid=?");
             stmt.setString(1, uuid);
             ResultSet result = stmt.executeQuery();
-            r.add(result.getInt("banned"));
-            r.add(result.getInt("ban_time"));
-            r.add(result.getInt("muted"));
-            r.add(result.getInt("mute_time"));
-            r.add(result.getString("nickname"));
-            r.add(result.getBoolean("admin"));
-            return r;
+            if (result.next()) {
+                r.add(result.getDate("banned"));
+                r.add(result.getInt("ban_time"));
+                r.add(result.getDate("muted"));
+                r.add(result.getInt("mute_time"));
+                r.add(result.getString("lastname"));
+                r.add(result.getString("nickname"));
+                return r;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -101,23 +104,13 @@ public class SQLConnector {
 
     public void saveUser(User user) {
         try {
-            PreparedStatement stmt = connection.prepareStatement("UPDATE `" + prefix + "users` SET `banned`=?, `ban_time`=?, `muted`=?, `mute_time`=?, `nickname`=? WHERE `uuid`=?");
+            PreparedStatement stmt = connection.prepareStatement("UPDATE `" + prefix + "users` SET `banned`=?, `ban_time`=-1, `muted`=?, `mute_time`=-1, `lastname`=?, `nickname`=? WHERE `uuid`=?");
             stmt.setDate(1, user.banned);
-            stmt.setInt(2, user.ban_time);
-            stmt.setDate(3, user.muted);
-            stmt.setInt(4, user.mute_time);
-            stmt.setString(5, user.nickname);
-            stmt.setString(6, user.player.getUniqueId().toString());
+            stmt.setDate(2, user.muted);
+            stmt.setString(3, user.nickname);
+            stmt.setString(4, user.lastName);
+            stmt.setString(5, user.player.getUniqueId().toString());
             stmt.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void test() {
-        try {
-            // TODO
-            PreparedStatement stmt = connection.prepareStatement("INSERT INTO");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -12,12 +12,8 @@ hub:
 quiet:
   format: ""
   send: []
-  receive: []
 special:
   format: "{prefix}{player}{suffix} &8: &r{message}"
   send:
   - creative
-  - factions
-  receive:
-  - hub
   - factions

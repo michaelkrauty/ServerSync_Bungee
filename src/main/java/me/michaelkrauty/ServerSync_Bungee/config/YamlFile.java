@@ -18,7 +18,7 @@ import java.io.InputStream;
 public class YamlFile {
 
     public final File yamlFile;
-    private final Main main;
+    public final Main main;
     Configuration yaml;
 
     public YamlFile(Main main, String name) {
