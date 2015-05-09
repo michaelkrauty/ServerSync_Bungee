@@ -68,7 +68,9 @@ public class MCServerSession implements Runnable {
                             session.out.println(out);
                         }
                     } else if (action.equalsIgnoreCase("ban")) {
-
+                        // TODO: ban
+                    } else if (action.equalsIgnoreCase("nickname")) {
+                        User user = main.users.get(main.getProxy().getPlayer(obj.get("player").getAsString()));
                     } else if (action.equalsIgnoreCase("mute")) {
                         for (MCServerSession session : main.connectionHandler.mcServerConnections) {
                             session.out.println(obj);
