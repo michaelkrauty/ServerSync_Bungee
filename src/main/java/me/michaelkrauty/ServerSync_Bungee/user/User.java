@@ -31,12 +31,14 @@ public class User {
         this.player = player;
         main.sql.checkUser(player.getUniqueId().toString());
         ArrayList<Object> data = main.sql.getUserData(player.getUniqueId().toString());
-        muted = (Date) data.get(0);
-        mute_time = (Integer) data.get(1);
-        banned = (Date) data.get(2);
-        ban_time = (Integer) data.get(3);
-        lastName = (String) data.get(4);
-        nickname = (String) data.get(5);
+        banned = (Date) data.get(0);
+        ban_time = (Integer) data.get(1);
+        ban_reason = (String) data.get(2);
+        muted = (Date) data.get(3);
+        mute_time = (Integer) data.get(4);
+        mute_reason = (String) data.get(5);
+        lastName = (String) data.get(6);
+        nickname = (String) data.get(7);
         channel = main.channels.getDefaultChannel();
     }
 

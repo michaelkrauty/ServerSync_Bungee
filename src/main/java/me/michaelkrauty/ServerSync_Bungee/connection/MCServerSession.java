@@ -7,12 +7,14 @@ import com.google.gson.JsonSyntaxException;
 import me.michaelkrauty.ServerSync_Bungee.Main;
 import me.michaelkrauty.ServerSync_Bungee.channels.Channel;
 import me.michaelkrauty.ServerSync_Bungee.user.User;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.Date;
 
 /**
  * Created on 3/21/2015.
@@ -59,18 +61,37 @@ public class MCServerSession implements Runnable {
                                     to.add(new JsonParser().parse(u.player.getName()));
                             }
                             out.add("to", to);
-                            String message = channel.format
+                            //String message = channel.format
+                            //        .replace("{player}", user.getName())
+                            //        .replace("{message}", obj.get("message").getAsString());
+                            String message = "&7{player} &8: &r{message}"
                                     .replace("{player}", user.getName())
                                     .replace("{message}", obj.get("message").getAsString());
-
 
                             out.addProperty("message", message);
                             session.out.println(out);
                         }
                     } else if (action.equalsIgnoreCase("ban")) {
-                        // TODO: ban
+                        User user = main.users.get(main.getProxy().getPlayer(obj.get("player").getAsString()));
+                        user.banned = new Date(System.currentTimeMillis());
+                        if (obj.get("reason") != null) {
+                            user.ban_reason = obj.get("reason").getAsString();
+                            user.player.disconnect(new TextComponent(obj.get("reason").getAsString()));
+                        } else
+                            user.player.disconnect(new TextComponent("You've been permanently banned from the server."));
                     } else if (action.equalsIgnoreCase("nickname")) {
                         User user = main.users.get(main.getProxy().getPlayer(obj.get("player").getAsString()));
+                        if (obj.get("nickname").getAsString().equalsIgnoreCase("off"))
+                            user.nickname = null;
+                        else
+                            user.nickname = obj.get("nickname").getAsString();
+                    } else if (action.equalsIgnoreCase("realname")) {
+                        User target = main.users.getByNickname(obj.get("target").getAsString());
+                        JsonObject out = new JsonObject();
+                        out.addProperty("action", "realname");
+                        out.addProperty("player", obj.get("player").getAsString());
+                        out.addProperty("target", obj.get("target").getAsString());
+                        out.addProperty("realname", target.player.getName());
                     } else if (action.equalsIgnoreCase("mute")) {
                         for (MCServerSession session : main.connectionHandler.mcServerConnections) {
                             session.out.println(obj);

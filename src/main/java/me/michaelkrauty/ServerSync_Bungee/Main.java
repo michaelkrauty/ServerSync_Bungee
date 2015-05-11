@@ -48,6 +48,7 @@ public class Main extends Plugin implements Listener {
 
     @EventHandler
     public void onLeave(PlayerDisconnectEvent event) {
+        users.get(event.getPlayer()).lastName = event.getPlayer().getName();
         users.remove(event.getPlayer());
     }
 }

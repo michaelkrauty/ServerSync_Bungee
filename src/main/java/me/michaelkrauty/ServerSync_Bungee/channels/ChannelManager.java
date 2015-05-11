@@ -42,6 +42,8 @@ public class ChannelManager {
     }
 
     public Channel getDefaultChannel() {
+        if (getChannels().isEmpty())
+            return null;
         for (Channel channel : channels)
             if (channel.isDefault)
                 return channel;

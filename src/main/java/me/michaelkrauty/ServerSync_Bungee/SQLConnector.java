@@ -72,7 +72,7 @@ public class SQLConnector {
     public void checkUser(String uuid) {
         if (getUserData(uuid) == null) {
             try {
-                PreparedStatement stmt = connection.prepareStatement("INSERT INTO `" + prefix + "users` (`uuid`, `banned`, `ban_time`, `ban_reason`, `muted`, `mute_time`, `mute_reason`, `lastname`, `nickname`) VALUES (?,null,-1,null,-1,null,null);");
+                PreparedStatement stmt = connection.prepareStatement("INSERT INTO `" + prefix + "users` (`uuid`, `banned`, `ban_time`, `ban_reason`, `muted`, `mute_time`, `mute_reason`, `lastname`, `nickname`) VALUES (?,null,-1,null,null,-1,null,null,null);");
                 stmt.setString(1, uuid);
                 stmt.execute();
             } catch (Exception e) {

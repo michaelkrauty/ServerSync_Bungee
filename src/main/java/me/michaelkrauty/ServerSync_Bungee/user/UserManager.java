@@ -42,4 +42,11 @@ public class UserManager {
     public ArrayList<User> getUsers() {
         return users;
     }
+
+    public User getByNickname(String nickname) {
+        for (User user : users)
+            if (user.nickname.equalsIgnoreCase(nickname))
+                return user;
+        return null;
+    }
 }
