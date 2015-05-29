@@ -72,7 +72,7 @@ public class SQLConnector {
     public void checkUser(String uuid) {
         if (getUserData(uuid) == null) {
             try {
-                PreparedStatement stmt = connection.prepareStatement("INSERT INTO `" + prefix + "users` (`uuid`, `banned`, `ban_time`, `ban_reason`, `muted`, `mute_time`, `mute_reason`, `lastname`, `nickname`) VALUES (?,null,-1,null,null,-1,null,null,null);");
+                PreparedStatement stmt = connection.prepareStatement("INSERT INTO `" + prefix + "users` (`uuid`, `banned`, `ban_time`, `ban_reason`, `muted`, `mute_time`, `mute_reason`, `lastname`, `nickname`) VALUES (?,null,-1,null,-1,null,null);");
                 stmt.setString(1, uuid);
                 stmt.execute();
             } catch (Exception e) {
@@ -98,6 +98,30 @@ public class SQLConnector {
                 r.add(result.getString("nickname"));
                 return r;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public ArrayList<Object> getUserByNickname(String nickname) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM `" + prefix + "users` WHERE nickname=?");
+            stmt.setString(1, nickname);
+            ResultSet result = stmt.executeQuery();
+            ArrayList<Object> r = new ArrayList<Object>();
+            if (result.next()) {
+                r.add(result.getDate("banned"));
+                r.add(result.getInt("ban_time"));
+                r.add(result.getString("ban_reason"));
+                r.add(result.getDate("muted"));
+                r.add(result.getInt("mute_time"));
+                r.add(result.getString("mute_reason"));
+                r.add(result.getString("lastname"));
+                r.add(result.getString("nickname"));
+                return r;
+            }
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
         }

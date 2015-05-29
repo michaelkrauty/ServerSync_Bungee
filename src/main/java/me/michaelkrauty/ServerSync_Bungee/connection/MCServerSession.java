@@ -15,6 +15,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.Date;
+import java.util.ArrayList;
 
 /**
  * Created on 3/21/2015.
@@ -39,6 +40,7 @@ public class MCServerSession implements Runnable {
             out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
             String input;
             while ((input = in.readLine()) != null) {
+                main.getLogger().info(input);
                 try {
                     JsonParser parser = new JsonParser();
                     JsonObject obj = parser.parse(input).getAsJsonObject();
@@ -61,12 +63,12 @@ public class MCServerSession implements Runnable {
                                     to.add(new JsonParser().parse(u.player.getName()));
                             }
                             out.add("to", to);
-                            //String message = channel.format
-                            //        .replace("{player}", user.getName())
-                            //        .replace("{message}", obj.get("message").getAsString());
-                            String message = "&7{player} &8: &r{message}"
+                            String message = channel.format
                                     .replace("{player}", user.getName())
-                                    .replace("{message}", obj.get("message").getAsString());
+                                    .replace("{message}", obj.get("message").getAsString()
+                                            .replace("{prefix}", obj.get("prefix").getAsString())
+                                            .replace("{suffix}", obj.get("suffix").getAsString()));
+
 
                             out.addProperty("message", message);
                             session.out.println(out);
@@ -74,24 +76,32 @@ public class MCServerSession implements Runnable {
                     } else if (action.equalsIgnoreCase("ban")) {
                         User user = main.users.get(main.getProxy().getPlayer(obj.get("player").getAsString()));
                         user.banned = new Date(System.currentTimeMillis());
-                        if (obj.get("reason") != null) {
+                        if (obj.get("reason") != null)
                             user.ban_reason = obj.get("reason").getAsString();
-                            user.player.disconnect(new TextComponent(obj.get("reason").getAsString()));
-                        } else
-                            user.player.disconnect(new TextComponent("You've been permanently banned from the server."));
-                    } else if (action.equalsIgnoreCase("nickname")) {
+                        user.ban_time = -1;
+                    } else if (action.equalsIgnoreCase("tempban")) {
                         User user = main.users.get(main.getProxy().getPlayer(obj.get("player").getAsString()));
-                        if (obj.get("nickname").getAsString().equalsIgnoreCase("off"))
-                            user.nickname = null;
-                        else
+                        user.banned = new Date(System.currentTimeMillis());
+                        user.ban_time = obj.get("duration").getAsInt();
+                        if (obj.get("reason") != null)
+                            user.ban_reason = obj.get("reason").getAsString();
+                    } else if (action.equalsIgnoreCase("nickname")) {
+                        if (main.sql.getUserByNickname(obj.get("nickname").getAsString()) == null) {
+                            User user = main.users.get(main.getProxy().getPlayer(obj.get("player").getAsString()));
                             user.nickname = obj.get("nickname").getAsString();
+                        }
                     } else if (action.equalsIgnoreCase("realname")) {
-                        User target = main.users.getByNickname(obj.get("target").getAsString());
-                        JsonObject out = new JsonObject();
-                        out.addProperty("action", "realname");
-                        out.addProperty("player", obj.get("player").getAsString());
-                        out.addProperty("target", obj.get("target").getAsString());
-                        out.addProperty("realname", target.player.getName());
+                        ArrayList<Object> uInfo = main.sql.getUserByNickname(obj.get("nickname").getAsString());
+                        if (uInfo != null) {
+                            if (obj.get("sender").getAsString().equals("CONSOLE")) {
+                                for (MCServerSession session : main.connectionHandler.mcServerConnections) {
+
+                                }
+                            } else {
+                                User user = main.users.get(main.getProxy().getPlayer(obj.get("player").getAsString()));
+                                user.player.sendMessage(new TextComponent((String) uInfo.get(7)));
+                            }
+                        }
                     } else if (action.equalsIgnoreCase("mute")) {
                         for (MCServerSession session : main.connectionHandler.mcServerConnections) {
                             session.out.println(obj);
