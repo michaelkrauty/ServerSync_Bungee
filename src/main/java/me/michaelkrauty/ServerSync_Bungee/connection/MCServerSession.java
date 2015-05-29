@@ -66,8 +66,9 @@ public class MCServerSession implements Runnable {
                             String message = channel.format
                                     .replace("{player}", user.getName())
                                     .replace("{message}", obj.get("message").getAsString()
-                                            .replace("{prefix}", obj.get("prefix").getAsString())
-                                            .replace("{suffix}", obj.get("suffix").getAsString()));
+                                            //        .replace("{prefix}", obj.get("prefix").getAsString())
+                                            //        .replace("{suffix}", obj.get("suffix").getAsString())
+                                    );
 
 
                             out.addProperty("message", message);
