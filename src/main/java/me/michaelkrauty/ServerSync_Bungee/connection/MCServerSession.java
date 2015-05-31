@@ -7,6 +7,9 @@ import com.google.gson.JsonSyntaxException;
 import me.michaelkrauty.ServerSync_Bungee.Main;
 import me.michaelkrauty.ServerSync_Bungee.channels.Channel;
 import me.michaelkrauty.ServerSync_Bungee.user.User;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import java.io.BufferedReader;
@@ -59,20 +62,62 @@ public class MCServerSession implements Runnable {
                             out.addProperty("action", "chat");
                             JsonArray to = new JsonArray();
                             for (User u : main.users.getUsers()) {
-                                if (u.channel.send.contains(channel))
-                                    to.add(new JsonParser().parse(u.player.getName()));
+                                if (u.channel.send.contains(channel)) {
+                                    //to.add(new JsonParser().parse(u.player.getName()));
+
+                                    //TextComponent message = new TextComponent();
+                                    //message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(user.player.getName()).create()));
+
+                                    BaseComponent usr = new TextComponent(user.getName());
+                                    usr.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(user.player.getName()).create()));
+                                    BaseComponent message = new TextComponent();
+
+                                    BaseComponent[] comp = new BaseComponent[]{
+                                            usr,
+                                            message
+                                    };
+
+                                    u.player.sendMessage(
+                                            new ComponentBuilder(
+                                                    user.getName()
+                                            ).event(
+                                                    new HoverEvent(
+                                                            HoverEvent.Action.SHOW_TEXT,
+                                                            new ComponentBuilder(
+                                                                    user.player.getName()
+                                                            ).create()
+                                                    )
+                                            ).create()
+                                    );
+
+                                    u.player.sendMessage(
+                                            new ComponentBuilder(
+                                                    user.getName()
+                                            ).event(
+                                                    new HoverEvent(
+                                                            HoverEvent.Action.SHOW_TEXT,
+                                                            new ComponentBuilder(
+                                                                    user.player.getName()
+                                                            ).create()
+                                                    )
+                                            ).append(" §8: §r" + obj.get("message").getAsString()
+                                            ).create()
+                                    );
+
+                                }
                             }
                             out.add("to", to);
                             String message = channel.format
-                                    .replace("{player}", user.getName())
                                     .replace("{message}", obj.get("message").getAsString()
                                             //        .replace("{prefix}", obj.get("prefix").getAsString())
                                             //        .replace("{suffix}", obj.get("suffix").getAsString())
                                     );
 
 
-                            out.addProperty("message", message);
-                            session.out.println(out);
+                            //out.addProperty("message", message);
+                            //out.addProperty("sender", user.getName());
+                            //out.addProperty("realsender", user.player.getName());
+                            //session.out.println(out);
                         }
                     } else if (action.equalsIgnoreCase("ban")) {
                         User user = main.users.get(main.getProxy().getPlayer(obj.get("player").getAsString()));
